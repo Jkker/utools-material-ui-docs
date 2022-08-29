@@ -1,150 +1,86 @@
-const { Notification } = require('electron')
 const searchParams = new URLSearchParams({
-  'x-algolia-agent': 'TS DT Fetch',
-  'x-algolia-application-id': 'OFCNCOG2CU',
-  'x-algolia-api-key': 'f54e21fa3a2a0160595bb058179bfb1e',
-})
-const href = `https://ofcncog2cu-2.algolianet.com/1/indexes/*/queries?${searchParams.toString()}`
-const abort = new AbortController()
+  "x-algolia-agent":
+    "Algolia for JavaScript (4.9.2); Browser (lite); docsearch (3.1.0); docsearch-react (3.1.0)",
+  "x-algolia-application-id": "KNPXZI5B0M",
+  "x-algolia-api-key": "5fc87cef58bb80203d2207578309fab6",
+});
+const url = `https://knpxzi5b0m-dsn.algolia.net/1/indexes/*/queries?${searchParams.toString()}`;
+const cache = new Map();
 
-const cache = new Map()
-const randomQuery = [
-  'react',
-  'express',
-  'lodash',
-  'preact',
-  'lambda',
-  'jest',
-  'danger',
-  'ember',
-  'vue',
-  'svelte',
-  'node',
-  'ASP',
-]
-const createPostData = (requestedSearch) => {
-  const search =
-    requestedSearch ||
-    randomQuery[Math.floor(Math.random() * randomQuery.length)]
+const createPostData = (query) => {
   return {
     requests: [
       {
-        analyticsTags: ['typescriptlang.org/dt/search'],
-        attributesToHighlight: ['name', 'description', 'keywords'],
+        attributesToHighlight: ["hierarchy.lvl0", "hierarchy.lvl1"],
         attributesToRetrieve: [
-          'deprecated',
-          'description',
-          'downloadsLast30Days',
-          'homepage',
-          'humanDownloadsLast30Days',
-          'keywords',
-          'license',
-          'modified',
-          'name',
-          'owner',
-          'repository',
-          'types',
-          'version',
+          "hierarchy.lvl0",
+          "hierarchy.lvl1",
+          "hierarchy.lvl2",
+          "hierarchy.lvl3",
+          "hierarchy.lvl4",
+          "hierarchy.lvl5",
+          "hierarchy.lvl6",
+          "content",
+          "type",
+          "url",
         ],
-        facets: ['keywords', 'keywords', 'owner.name'],
-        hitsPerPage: requestedSearch ? 51 : 25,
-        indexName: 'npm-search',
-        maxValuesPerFacet: 10,
-        page: 0,
-        params: '',
-        query: search.startsWith('@types/')
-          ? search.substring('@types/'.length)
-          : search,
-        tagFilters: '',
+        indexName: "tailwindcss",
+        params:
+          "attributesToRetrieve=%5B%22hierarchy.lvl0%22%2C%22hierarchy.lvl1%22%2C%22hierarchy.lvl2%22%2C%22hierarchy.lvl3%22%2C%22hierarchy.lvl4%22%2C%22hierarchy.lvl5%22%2C%22hierarchy.lvl6%22%2C%22content%22%2C%22type%22%2C%22url%22%5D&attributesToSnippet=%5B%22hierarchy.lvl1%3A10%22%2C%22hierarchy.lvl2%3A10%22%2C%22hierarchy.lvl3%3A10%22%2C%22hierarchy.lvl4%3A10%22%2C%22hierarchy.lvl5%3A10%22%2C%22hierarchy.lvl6%3A10%22%2C%22content%3A10%22%5D&snippetEllipsisText=%E2%80%A6&highlightPreTag=%3Cmark%3E&highlightPostTag=%3C%2Fmark%3E&hitsPerPage=20&facetFilters=version%3Av3&distinct=1",
+        query,
       },
     ],
-  }
-}
-const Installers = {
-  npm: ['npm i', '--save-dev'],
-  yarn: ['yarn add', '--dev'],
-  pnpm: ['pnpm add', '--save-dev'],
-}
-const getResultList = (list = []) => {
-  const installer = Installers.yarn
-  return list.map((v) => {
-    const { name, description, types = {} } = v
-    const npmUrl = `https://www.npmjs.com/package/${name}`
-    const installCommands = [`${installer[0]} ${name}`]
-    if (types.ts === 'definitely-typed') {
-      installCommands.push(
-        `${installer[0]} ${types.definitelyTyped} ${installer[1]}`
-      )
-    }
+  };
+};
+
+const getResultList = (list = []) =>
+  list.map(({ hierarchy, url, type }) => {
+    const title = hierarchy[type];
+    const description =
+      hierarchy["lvl1"] === title ? hierarchy["lvl0"] : hierarchy["lvl1"];
+
     return {
-      title: name,
-      description: `${description}\n（选择复制：${installCommands.join(
-        ' && '
-      )}）`,
-      icon: 'https://files.catbox.moe/tur943.png',
-      url: npmUrl,
-      installCommands: installCommands.join(' && '),
-    }
-  })
-}
+      title,
+      description,
+      url,
+    };
+  });
+
+const plugin = {
+  mode: "list",
+  args: {
+    search: (action, query, callbackSetList) => {
+      const cached = cache.get(query);
+      if (cached) {
+        callbackSetList(cached);
+        return;
+      }
+
+      fetch(url, {
+        method: "POST",
+        body: JSON.stringify(createPostData(query)),
+      })
+        .then(async (response) => {
+          const json = await response.json();
+          const resultList = getResultList(json.results[0].hits);
+          cache.set(query, resultList);
+          callbackSetList(resultList);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    // 用户选择列表中某个条目时被调用
+    select: (action, items) => {
+      window.utools.hideMainWindow();
+      const url = items.url;
+      utools.shellOpenExternal(url);
+      window.utools.outPlugin();
+    },
+    placeholder: "查询 TailwindCSS 文档",
+  },
+};
 
 window.exports = {
-  type: {
-    mode: 'list',
-    args: {
-      // 进入插件时调用（可选）
-      enter: (action, callbackSetList) => {
-        // 如果进入插件就要显示列表数据
-        callbackSetList([
-          {
-            title: 'Type Search',
-            description: '搜索npm包类型',
-            icon: '', // 图标(可选)
-            url: 'https://www.typescriptlang.org/dt/search?search=',
-          },
-        ])
-      },
-      // 子输入框内容变化时被调用 可选 (未设置则无搜索)
-      search: (action, searchWord, callbackSetList) => {
-        // 获取一些数据
-        const cached = cache.get(searchWord)
-        if (cached) {
-          // 执行 callbackSetList 显示出来
-          callbackSetList(getResultList(cached.hits))
-          return
-        }
-        abort.abort()
-        fetch(href, {
-          method: 'POST',
-          body: JSON.stringify(createPostData(searchWord)),
-        }).then(async (response) => {
-          const json = await response.json()
-          const [rawResult] = json.results
-          const processedResult = {
-            ...rawResult,
-            hits: rawResult.hits.filter((hit) => hit.types.ts),
-          }
-          cache.set(searchWord, processedResult)
-          // 执行 callbackSetList 显示出来
-          callbackSetList(getResultList(processedResult.hits))
-        })
-      },
-      // 用户选择列表中某个条目时被调用
-      select: (action, itemData, callbackSetList) => {
-        window.utools.hideMainWindow()
-        const installCommands = itemData.installCommands
-        const url = itemData.url
-        if (installCommands) {
-          /** 复制命令 */
-          utools.copyText(installCommands)
-          /** 通知 */
-          utools.showNotification('复制成功')
-        } else {
-          utools.shellOpenExternal(url)
-        }
-        window.utools.outPlugin()
-      },
-      placeholder: 'Type Search',
-    },
-  },
-}
+  TailwindCSS: plugin,
+};

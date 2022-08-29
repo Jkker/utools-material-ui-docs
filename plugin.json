@@ -1,10 +1,14 @@
 {
-  "logo": "./src/typescript.png",
+  "logo": "./src/tailwindcss.png",
   "features": [
     {
-      "code": "type",
-      "explain": "查找具有类型的npm包",
-      "cmds": ["type"]
+      "code": "TailwindCSS",
+      "explain": "查询 TailwindCSS 文档",
+      "cmds": [
+        "TailwindCSS",
+        "Tailwind",
+        "tw"
+      ]
     }
   ],
   "preload": "./src/preload.js"
