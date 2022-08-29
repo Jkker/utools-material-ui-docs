@@ -1,6 +1,6 @@
 <div align="center">
-  <a href="https://github.com/Jkker/utools-tailwindcss-docs/blob/master/src/tailwindcss.png">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/Jkker/utools-tailwindcss-docs">
+    <img src="https://github.com/Jkker/utools-tailwindcss-docs/raw/master/src/tailwindcss.png" alt="Logo" width="80" height="80">
   </a>
   <h3 align="center">uTools TailwindCSS Documentation</h3>
   <p align="center">
@@ -28,3 +28,4 @@
   "url": "https://knpxzi5b0m-dsn.algolia.net/1/indexes/*/queries"
 }
 ```
+
