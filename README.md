@@ -14,7 +14,17 @@
 </div>
 
 ## 功能预览
-![Preview](https://raw.githubusercontent.com/Jkker/images/master/utools-tailwindcss-docs.webp)
+![Preview](https://raw.githubusercontent.com/Jkker/utools-tailwindcss-docs/master/utools-tailwindcss-docs.webp)
+
+
+## 选项设置
+
+通过 `TailwindCSS Setting` 指令打开设置页面，可以设置以下选项：
+
+![Setting](https://raw.githubusercontent.com/Jkker/utools-tailwindcss-docs/master/utools-tailwindcss-docs-settings.webp)
+
+- 文档语言: 中文 / 英文
+- 打开方式: 使用系统默认浏览器打开 / 使用 uTools 内置浏览器打开
 
 
 ## 实现原理

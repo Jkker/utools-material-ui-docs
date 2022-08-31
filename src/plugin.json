@@ -1,0 +1,22 @@
+{
+  "logo": "./tailwindcss.png",
+  "features": [
+    {
+      "code": "TailwindCSS",
+      "explain": "查询 TailwindCSS 文档",
+      "cmds": [
+        "TailwindCSS",
+        "Tailwind",
+        "tw"
+      ]
+    },
+    {
+      "code": "TailwindCSSSetting",
+      "explain": "设置 TailwindCSS 文档语言、打开方式等",
+      "cmds": [
+        "TailwindCSS Setting"
+      ]
+    }
+  ],
+  "preload": "./preload.js"
+}

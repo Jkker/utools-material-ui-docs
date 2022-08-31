@@ -1,3 +1,13 @@
+const DEFAULT_CONFIG = {
+  cn: false,
+  openExternal: true,
+};
+
+const CONFIG_ID = "config";
+
+const getConfig = () =>
+  window.utools.db.get(CONFIG_ID) ?? { data: DEFAULT_CONFIG };
+
 const searchParams = new URLSearchParams({
   "x-algolia-agent":
     "Algolia for JavaScript (4.9.2); Browser (lite); docsearch (3.1.0); docsearch-react (3.1.0)",
@@ -73,14 +83,79 @@ const plugin = {
     // 用户选择列表中某个条目时被调用
     select: (action, items) => {
       window.utools.hideMainWindow();
-      const url = items.url;
-      utools.shellOpenExternal(url);
+      const data = getConfig().data;
+      console.log(`🚀 ~ file: preload.js ~ line 87 ~ data`, data);
+      const url = data.cn
+        ? items.url.replace("tailwindcss.com", "www.tailwindcss.cn")
+        : items.url;
+
+      if (data.openExternal) {
+        utools.shellOpenExternal(url);
+      } else {
+        utools.ubrowser.goto(url).run();
+      }
+
       window.utools.outPlugin();
     },
-    placeholder: "查询 TailwindCSS 文档",
+    placeholder: "更改 uTools TailwindCSS 插件设置",
+  },
+};
+
+const setting = {
+  mode: "list",
+  args: {
+    // 进入插件时调用（可选）
+    enter: (action, callbackSetList) => {
+      // 如果进入插件就要显示列表数据
+      const config = getConfig();
+      const data = config.data;
+      console.log(`🚀 get config`, config);
+      callbackSetList([
+        {
+          title: !data.cn ? "切换到中文文档" : "Switch to English Docs",
+          description: !data.cn
+            ? "替换文档域名为 www.tailwindcss.cn"
+            : "Switch to tailwindcss.com",
+          icon: "./lang.svg", // 图标(可选)
+          data: {
+            ...data,
+            cn: !data.cn,
+          },
+          _rev: config._rev,
+        },
+        {
+          title: !data.openExternal
+            ? "使用系统默认浏览器打开"
+            : "使用 uTools 内置浏览器打开",
+          description: !data.openExternal
+            ? "当前为使用 uTools 内置浏览器打开"
+            : "当前为使用系统默认浏览器打开",
+          icon: "./browser.svg", // 图标(可选)
+          data: {
+            ...data,
+            openExternal: !data.openExternal,
+          },
+          _rev: config._rev,
+        },
+      ]);
+    },
+    select: (action, { data, _rev }) => {
+      window.utools.db.put({
+        _id: CONFIG_ID,
+        data: data,
+        _rev,
+      });
+      console.log(`🚀 put config `, {
+        _id: CONFIG_ID,
+        data: data,
+        _rev,
+      });
+      window.utools.outPlugin();
+    },
   },
 };
 
 window.exports = {
   TailwindCSS: plugin,
+  TailwindCSSSetting: setting,
 };
