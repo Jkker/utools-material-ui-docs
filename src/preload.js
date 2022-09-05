@@ -11,10 +11,10 @@ const getConfig = () =>
 const searchParams = new URLSearchParams({
   "x-algolia-agent":
     "Algolia for JavaScript (4.9.2); Browser (lite); docsearch (3.1.0); docsearch-react (3.1.0)",
-  "x-algolia-application-id": "KNPXZI5B0M",
-  "x-algolia-api-key": "5fc87cef58bb80203d2207578309fab6",
+  "x-algolia-application-id": "TZGZ85B9TB",
+  "x-algolia-api-key": "8177dfb3e2be72b241ffb8c5abafa899",
 });
-const url = `https://knpxzi5b0m-dsn.algolia.net/1/indexes/*/queries?${searchParams.toString()}`;
+const url = `https://tzgz85b9tb-dsn.algolia.net/1/indexes/*/queries?${searchParams.toString()}`;
 const cache = new Map();
 
 const createPostData = (query) => {
@@ -34,9 +34,9 @@ const createPostData = (query) => {
           "type",
           "url",
         ],
-        indexName: "tailwindcss",
+        indexName: "material-ui",
         params:
-          "attributesToRetrieve=%5B%22hierarchy.lvl0%22%2C%22hierarchy.lvl1%22%2C%22hierarchy.lvl2%22%2C%22hierarchy.lvl3%22%2C%22hierarchy.lvl4%22%2C%22hierarchy.lvl5%22%2C%22hierarchy.lvl6%22%2C%22content%22%2C%22type%22%2C%22url%22%5D&attributesToSnippet=%5B%22hierarchy.lvl1%3A10%22%2C%22hierarchy.lvl2%3A10%22%2C%22hierarchy.lvl3%3A10%22%2C%22hierarchy.lvl4%3A10%22%2C%22hierarchy.lvl5%3A10%22%2C%22hierarchy.lvl6%3A10%22%2C%22content%3A10%22%5D&snippetEllipsisText=%E2%80%A6&highlightPreTag=%3Cmark%3E&highlightPostTag=%3C%2Fmark%3E&hitsPerPage=20&facetFilters=version%3Av3&distinct=1",
+          "attributesToRetrieve=%5B%22hierarchy.lvl0%22%2C%22hierarchy.lvl1%22%2C%22hierarchy.lvl2%22%2C%22hierarchy.lvl3%22%2C%22hierarchy.lvl4%22%2C%22hierarchy.lvl5%22%2C%22hierarchy.lvl6%22%2C%22content%22%2C%22type%22%2C%22url%22%5D&attributesToSnippet=%5B%22hierarchy.lvl1%3A10%22%2C%22hierarchy.lvl2%3A10%22%2C%22hierarchy.lvl3%3A10%22%2C%22hierarchy.lvl4%3A10%22%2C%22hierarchy.lvl5%3A10%22%2C%22hierarchy.lvl6%3A10%22%2C%22content%3A10%22%5D&snippetEllipsisText=%E2%80%A6&highlightPreTag=%3Cmark%3E&highlightPostTag=%3C%2Fmark%3E&hitsPerPage=40&facetFilters=%5B%22version%3Amaster%22%2C%22language%3Aen%22%5D&optionalFilters=%5B%22product%3Amaterial-ui%22%5D",
         query,
       },
     ],
@@ -84,9 +84,8 @@ const plugin = {
     select: (action, items) => {
       window.utools.hideMainWindow();
       const data = getConfig().data;
-      console.log(`🚀 ~ file: preload.js ~ line 87 ~ data`, data);
       const url = data.cn
-        ? items.url.replace("tailwindcss.com", "www.tailwindcss.cn")
+        ? items.url.replace("mui.com/", "mui.com/zh/")
         : items.url;
 
       if (data.openExternal) {
@@ -97,7 +96,7 @@ const plugin = {
 
       window.utools.outPlugin();
     },
-    placeholder: "更改 uTools TailwindCSS 插件设置",
+    placeholder: "更改 uTools Material UI Doc 插件设置",
   },
 };
 
@@ -114,8 +113,8 @@ const setting = {
         {
           title: !data.cn ? "切换到中文文档" : "Switch to English Docs",
           description: !data.cn
-            ? "替换文档域名为 www.tailwindcss.cn"
-            : "Switch to tailwindcss.com",
+            ? "替换文档域名为 mui.com/zh"
+            : "Switch to mui.com",
           icon: "./lang.svg", // 图标(可选)
           data: {
             ...data,
@@ -156,6 +155,6 @@ const setting = {
 };
 
 window.exports = {
-  TailwindCSS: plugin,
-  TailwindCSSSetting: setting,
+  "Material UI": plugin,
+  "Material UI Doc Setting": setting,
 };
