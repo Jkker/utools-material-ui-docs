@@ -1,0 +1,22 @@
+{
+  "logo": "./material-ui.png",
+  "features": [
+    {
+      "code": "Material UI",
+      "explain": "查询 Material UI 文档",
+      "cmds": [
+        "Material UI",
+        "Material",
+        "mui"
+      ]
+    },
+    {
+      "code": "Material UI Doc Setting",
+      "explain": "设置 Material UI 文档语言、打开方式等",
+      "cmds": [
+        "Material UI Doc Setting"
+      ]
+    }
+  ],
+  "preload": "./preload.js"
+}
