@@ -108,7 +108,6 @@ const setting = {
       // 如果进入插件就要显示列表数据
       const config = getConfig();
       const data = config.data;
-      console.log(`🚀 get config`, config);
       callbackSetList([
         {
           title: !data.cn ? "切换到中文文档" : "Switch to English Docs",
@@ -140,11 +139,6 @@ const setting = {
     },
     select: (action, { data, _rev }) => {
       window.utools.db.put({
-        _id: CONFIG_ID,
-        data: data,
-        _rev,
-      });
-      console.log(`🚀 put config `, {
         _id: CONFIG_ID,
         data: data,
         _rev,
