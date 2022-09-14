@@ -96,7 +96,7 @@ const plugin = {
 
       window.utools.outPlugin();
     },
-    placeholder: "更改 uTools Material UI Doc 插件设置",
+    placeholder: "搜索 Material UI 文档",
   },
 };
 
